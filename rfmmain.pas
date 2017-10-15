@@ -5,7 +5,7 @@ unit rfmmain;
 interface
 
 uses
-  SysUtils, Classes, httpdefs, fpHTTP, fpWeb, Interfaces, matrix, rootmethods, htmlhelper, primitive;
+  SysUtils, Classes, httpdefs, fpHTTP, fpWeb, Interfaces, matrix, rootmethods, htmlhelper, primitive, interpolationmethods;
 
 type
 
@@ -19,6 +19,7 @@ type
 
   public
     srvPrimitive: TPrimitive;
+    srvInterpolacion: TInterpolationMethods;
     htmlCreator: THtmlHelper;
     rMethods: TRootMethods;
   end;
@@ -37,6 +38,7 @@ begin
   htmlCreator:= THtmlHelper.Create;
   rMethods:= TRootMethods.Create();
   srvPrimitive:= TPrimitive.Create;
+  srvInterpolacion:= TInterpolationMethods.Create;
 end;
 
 procedure TFPWebModule1.DataModuleRequest(Sender: TObject; ARequest: TRequest;
@@ -45,6 +47,7 @@ var  a,b,error: Double;
      result, equation, pEquation, method: String;
      max: TDMatrix;
 begin
+  {
   a:= StrToFloat(ARequest.QueryFields.Values['a']);
   b:= StrToFloat(ARequest.QueryFields.Values['b']);
   error:= StrToFloat(ARequest.QueryFields.Values['error']);
@@ -57,14 +60,17 @@ begin
   htmlCreator.equation:= equation;
   htmlCreator.pEquation:= pEquation;
   htmlCreator.method:= method;
+  }
   AResponse.ContentType:= 'text/html; charset= utf-8' ;
+  AResponse.Contents.Text:= srvInterpolacion.newton('{(2,3);(4,1);(3,5)}');
+  {
   if (method = 'gnw') or (method = 'gfx') then
      AResponse.Contents.Text := htmlCreator.smtMakeTable()
   else if (method = 'bi') or (method = 'fp') then
      AResponse.Contents.Text := htmlCreator.cmtMakeTable()
   else if (method = 'nw') or (method = 'sc') or (method = 'fx') then
      AResponse.Contents.Text := htmlCreator.omtMakeTable();
-
+  }
   {
   with srvPrimitive do begin
     equations.Add(equation);

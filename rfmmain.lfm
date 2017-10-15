@@ -5,7 +5,7 @@ object FPWebModule1: TFPWebModule1
   OnRequest = DataModuleRequest
   CreateSession = False
   Height = 223
-  HorizontalOffset = 255
-  VerticalOffset = 128
+  HorizontalOffset = 862
+  VerticalOffset = 474
   Width = 456
 end

@@ -3,7 +3,7 @@ program RootFindingMethods;
 {$mode objfpc}{$H+}
 
 uses
-  fpCGI, rfmmain, htmlhelper, primitive;
+  fpCGI, rfmmain, htmlhelper, primitive, interpolationmethods;
 
 begin
   Application.Title:='cgiproject1';
