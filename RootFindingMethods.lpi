@@ -30,7 +30,7 @@
         <PackageName Value="WebLaz"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="8">
       <Unit0>
         <Filename Value="RootFindingMethods.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -54,6 +54,19 @@
         <Filename Value="interpolationmethods.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit4>
+      <Unit5>
+        <Filename Value="integrationmethods.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="edomethods.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="EdoMethods"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="edomethods.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit7>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

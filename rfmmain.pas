@@ -5,7 +5,7 @@ unit rfmmain;
 interface
 
 uses
-  SysUtils, Classes, httpdefs, fpHTTP, fpWeb, Interfaces, matrix, rootmethods, htmlhelper, primitive, interpolationmethods;
+  SysUtils, Classes, httpdefs, fpHTTP, fpWeb, Interfaces,interpolationmethods, edomethods;
 
 type
 
@@ -18,10 +18,8 @@ type
   private
 
   public
-    srvPrimitive: TPrimitive;
+    srvEdo: TEdoMethods;
     srvInterpolacion: TInterpolationMethods;
-    htmlCreator: THtmlHelper;
-    rMethods: TRootMethods;
   end;
 
 var
@@ -35,73 +33,33 @@ implementation
 
 procedure TFPWebModule1.DataModuleCreate(Sender: TObject);
 begin
-  htmlCreator:= THtmlHelper.Create;
-  rMethods:= TRootMethods.Create();
-  srvPrimitive:= TPrimitive.Create;
+  srvEdo:= TEdoMethods.create();
   srvInterpolacion:= TInterpolationMethods.Create;
 end;
 
 procedure TFPWebModule1.DataModuleRequest(Sender: TObject; ARequest: TRequest;
   AResponse: TResponse; Var Handled: Boolean);
-var  a,b,error: Double;
-     result, equation, pEquation, method: String;
-     max: TDMatrix;
+var  x,fx,limit,error: Double;
+     result, equation, method: String;
 begin
-  {
-  a:= StrToFloat(ARequest.QueryFields.Values['a']);
-  b:= StrToFloat(ARequest.QueryFields.Values['b']);
+  x:= StrToFloat(ARequest.QueryFields.Values['x']);
+  fx:= StrToFloat(ARequest.QueryFields.Values['fx']);
   error:= StrToFloat(ARequest.QueryFields.Values['error']);
+  limit:= StrToFloat(ARequest.QueryFields.Values['limit']);
   equation:= ARequest.QueryFields.Values['equation'];
-  pEquation:= ARequest.QueryFields.Values['pequation'];
   method:= ARequest.QueryFields.Values['method'];
-  htmlCreator.xA:= a;
-  htmlCreator.xB:= b;
-  htmlCreator.eError:= error;
-  htmlCreator.equation:= equation;
-  htmlCreator.pEquation:= pEquation;
-  htmlCreator.method:= method;
-  }
-  AResponse.ContentType:= 'text/html; charset= utf-8' ;
-  AResponse.Contents.Text:= srvInterpolacion.newton('{(2,3);(4,1);(3,5)}');
-  {
-  if (method = 'gnw') or (method = 'gfx') then
-     AResponse.Contents.Text := htmlCreator.smtMakeTable()
-  else if (method = 'bi') or (method = 'fp') then
-     AResponse.Contents.Text := htmlCreator.cmtMakeTable()
-  else if (method = 'nw') or (method = 'sc') or (method = 'fx') then
-     AResponse.Contents.Text := htmlCreator.omtMakeTable();
-  }
-  {
-  with srvPrimitive do begin
-    equations.Add(equation);
-    equations.Add(pEquation);
-    vars.Add('x');
-    vars.Add('y');
-    values.Add(FloatToStr(a));
-    values.Add(FloatToStr(b));
-  end;
 
-  srvPrimitive.loadVars();
-  max:= srvPrimitive.jacobian().inverse();
+  AResponse.ContentType:= 'text/html; charset= utf-8';
+  if method = 'euler'then
+     srvEdo.useEuler(equation,x,fx,limit,error);
+  if method = 'heun' then
+     srvEdo.useHeun(equation,x,fx,limit,error);
+  if method = 'dormand' then
+     srvEdo.useDormandPrince(equation,x,fx,limit,error);
+  if method = 'runge4' then
+     srvEdo.useRungeKutta4(equation,x,fx,limit,error);
 
-  Result:= '<!DOCTYPE html><html><body>'
-         + '<style>'
-         + 'table, th, td {'
-         + 'border: 1px solid black;'
-         + 'border-collapse: collapse;'
-         + '}</style>'
-         +   '<table border="1">'
-         +     '<tr>'
-         +       '<td>'+ FloatToStr(max.data[0]) +'</td>'
-         +       '<td>'+ FloatToStr(max.data[1]) +'</td>'
-         +     '</tr>'
-         +     '<tr>'
-         +       '<td>'+ FloatToStr(max.data[2]) +'</td>'
-         +       '<td>'+ FloatToStr(max.data[3]) +'</td>'
-         +     '</tr>'
-         + '</table>' + '</body></html>';
-  AResponse.Contents.Text := result;
-  //}
+  AResponse.Contents.Text:= srvEdo.xyData;
   Handled := true;
 end;
 
